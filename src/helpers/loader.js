@@ -1,5 +1,5 @@
 import { Source } from "./Source";
-
+import getConfig from 'next/config';
 
 /*Prevents globalThis being reported as an error by eslint*/
 /*global globalThis*/
@@ -7,6 +7,9 @@ import { Source } from "./Source";
 // Singleton
 let aiSdkInstance;
 let source;
+
+
+const { publicRuntimeConfig } = getConfig();
 
 async function downloadAiSdk() {
   if (globalThis.CY) {
@@ -22,7 +25,7 @@ async function initAiSdk() {
 
   aiSdkInstance = await globalThis.CY.loader()
     // TODO INSERT YOUR LICENSE KEY HERE
-    .licenseKey("sk963257029eec4d0f72360b2b9bead4a2300fac0c54dd") // <--- ##############
+    .licenseKey(publicRuntimeConfig.AI_LICENSE_KEY)
     .source(source)
     .addModule(globalThis.CY.modules().FACE_DETECTOR.name)
     .addModule(globalThis.CY.modules().FACE_EMOTION.name, {
