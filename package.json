@@ -11,7 +11,9 @@
   "dependencies": {
     "@next/env": "^14.2.3",
     "async-mutex": "^0.5.0",
+    "guardian-js": "^5.0.0",
     "next": "14.2.2",
+    "openai": "^4.39.0",
     "react": "^18",
     "react-dom": "^18",
     "styled-components": "^6.1.8"
