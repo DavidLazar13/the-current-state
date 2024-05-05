@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   try {
     const { search } = req.query;
     const response = await guardian.content.search(search, {
-      pageSize: 38,
+      pageSize: 126,
       orderBy: "newest"
     });
 
