@@ -56,7 +56,7 @@ function Articles({ initialSearch = 'global warming OR war OR economic crisis', 
         const textColor = backgroundColor === 'black' ? 'white' : 'black';
 
         return (
-          <MarqueeContainer>
+          <MarqueeContainer key={index}>
             <MarqueeComponent
               key={index}
               text={concatenatedText}
