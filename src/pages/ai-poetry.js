@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import useFetchResults from "@/hooks/useFetchResults";
+import PoemComponent from "@/components/PoemComponent";
+import FullscreenOnFKeyPress from "@/components/FullscreenToggleComponent";
 
 function AIPoetry() {
-
 
   const {
     generatedPoem,
@@ -10,12 +11,12 @@ function AIPoetry() {
     error,
   } = useFetchResults();
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+
 
   return (
     <div>
-      {generatedPoem}
+      <FullscreenOnFKeyPress />
+      <PoemComponent generatedPoem={generatedPoem} loading={loading} error={error}/>
     </div>
   );
 }

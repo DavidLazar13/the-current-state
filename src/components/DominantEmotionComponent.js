@@ -1,22 +1,37 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import styled from "styled-components";
+
+const FullScreenContainer = styled.div`
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+const HiddenImagesContainer = styled.div`
+    display: none;
+`;
 
 const GenderComponent = () => {
   const [dominantEmotion, setDominantEmotion] = useState("");
 
   const emotionImages = {
-    angry: "/emotions/ANGRY/ANGRY_01.JPG",
-    disgust: "/emotions/DISGUST/DISGUST_01.JPG",
-    fear: "/emotions/FEAR/FEAR_01.JPG",
-    happy: "/emotions/HAPPY/HAPPY_02.JPG",
-    neutral: "/emotions/NEUTRAL/NEUTRAL_01.JPG",
-    sad: "/emotions/SAD/SAD_02.JPG",
-    surprise: "/emotions/SURPRISE/SURPRISE_01.JPG",
+    angry: { src: "/emotions/ANGRY/ANGRY_01.JPG", width: 1920, height: 1080 },
+    disgust: { src: "/emotions/DISGUST/DISGUST_01.JPG", width: 1920, height: 1080 },
+    fear: { src: "/emotions/FEAR/FEAR_01.JPG", width: 1920, height: 1080 },
+    happy: { src: "/emotions/HAPPY/HAPPY_02.JPG", width: 1920, height: 1080 },
+    neutral: { src: "/emotions/NEUTRAL/NEUTRAL_01.JPG", width: 1920, height: 1080 },
+    sad: { src: "/emotions/SAD/SAD_02.JPG", width: 1920, height: 1080 },
+    surprise: { src: "/emotions/SURPRISE/SURPRISE_01.JPG", width: 1920, height: 1080 },
   };
 
   useEffect(() => {
     function handleEmotionEvent(evt) {
       const emotion = evt.detail.output.dominantEmotion || "neutral";
+      console.log("Dominant emotion detected:", emotion);
       setDominantEmotion(emotion.toLowerCase());
     }
 
@@ -28,24 +43,23 @@ const GenderComponent = () => {
   }, []);
 
   return (
-    <div>
-      {/*<p style={{fontSize: "20px"}}>Dominant Emotion Component:</p>*/}
-      {/*<p>{dominantEmotion}</p>*/}
+    <FullScreenContainer>
       {dominantEmotion && (
         <Image
-          src={emotionImages[dominantEmotion]}
+          src={emotionImages[dominantEmotion].src}
           alt={dominantEmotion}
-          width={500}
-          height={500}
+          priority
+          fill={true}
+          style={{ objectFit: 'cover', width: '100%', height: '100%' }} // Changed from 'fill' to 'cover'
         />
       )}
-      {/* Preload Images */}
-      <div style={{ display: "none" }}>
-        {Object.values(emotionImages).map((src, index) => (
-          <Image key={index} src={src} alt={`preload-${index}`} priority width={500} height={500} />
+       Preload Images
+      <HiddenImagesContainer>
+        {Object.values(emotionImages).map((img, index) => (
+          <Image key={index} src={img.src} alt={`preload-${index}`} priority width={img.width} height={img.height} />
         ))}
-      </div>
-    </div>
+      </HiddenImagesContainer>
+    </FullScreenContainer>
   );
 };
 

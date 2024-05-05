@@ -4,6 +4,7 @@ import { useExternalScript } from "../helpers/externalScriptsLoader";
 import { getAiSdkControls } from "../helpers/loader";
 
 import DominantEmotionComponent from "@/components/DominantEmotionComponent";
+import FullscreenOnFKeyPress from "@/components/FullscreenToggleComponent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,17 +28,12 @@ export default function Home() {
 
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <div style={{display:"flex", flexDirection: "column", alignItems:"center"}}>
-          <div style={{width:"600px", height: "400px", position:"relative"}}>
-            {/*<video id="videoEl"></video>*/}
-            {/*<FaceTrackerComponent videoEl={videoEl}></FaceTrackerComponent>*/}
+        <div>
+          <FullscreenOnFKeyPress/>
+          <div style={{width:"600px", height: "400px", position:"relative", display:"none"}}>
+            <video id="videoEl"></video>
           </div>
-          {/*<MoodComponent></MoodComponent>*/}
           <DominantEmotionComponent></DominantEmotionComponent>
         </div>
-      </header>
-    </div>
   );
 }
