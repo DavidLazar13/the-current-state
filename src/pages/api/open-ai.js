@@ -11,12 +11,13 @@ export default async function handler(req, res) {
         model: "gpt-4-turbo-preview",
         messages: [{
           "role": "user",
-          "content": `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Make sure it contains at least 50 characters.
+          "content": `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Write it as if you are an AI writing for humanity. Make sure it contains at least 50 characters.
 
 **Formatting Requirements**:
 - HTML: Use the < pre> tag exclusively to ensure the text is arranged as concrete poetry.
-- Corrupted Text: Incorporate corrupted characters to represent digital decay or disruption while keeping the poem readable.
-- Unicode Artifacts: Add digital or Unicode artifacts (including Zalgo text) to enhance the visual presentation, but prioritize text content.
+- Corrupted Text: Add corrupted characters to represent digital decay or disruption while keeping the poem readable. Ensure these characters are used in addition to normal words and do not replace them entirely.
+- Unicode Artifacts: Add digital or Unicode artifacts to enhance the visual presentation, but prioritize text content.
+- Zalgo Text: Ensure that Zalgo text is prominently featured to enhance the visual presentation of digital decay, making the corrupted appearance noticeable and significant. It should complement the normal words and not replace them.
 
 **Restrictions**:
 - The poem must contain a high percentage of actual words with meaningful text.
@@ -25,7 +26,10 @@ export default async function handler(req, res) {
 **Output**:
 - Provide only the formatted poem, without any additional explanations.
 
-IMPORTANT: Maintain clear readability, and ensure the poem remains comprehensible despite disruptions.`
+**IMPORTANT**:
+- Maintain clear readability.
+- Ensure the poem remains comprehensible despite disruptions.
+`
         }],
         max_tokens: 1200
       });

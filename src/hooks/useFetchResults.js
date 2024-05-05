@@ -26,7 +26,7 @@ const useFetchResults = (prompt) => {
     fetchData();
 
     // Set up an interval to fetch the data every 3 minutes (180000 milliseconds)
-    const interval = setInterval(fetchData, 180000); // 60,000 milliseconds = 1 minute
+    const interval = setInterval(fetchData, 300000); // 60,000 milliseconds = 1 minute
 
     // Cleanup the interval on component unmount
     return () => clearInterval(interval);
