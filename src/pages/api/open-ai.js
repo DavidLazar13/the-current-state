@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 - Ensure the poem remains comprehensible despite disruptions.
 `
           }],
-          max_tokens: 2000
+          max_tokens: 20
         });
         res.status(200).json({ result: response.choices[0].message });
       } catch (error) {
