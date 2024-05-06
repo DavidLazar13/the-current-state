@@ -92,7 +92,6 @@ const EmotionImageChanger = () => {
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
-        priority
         fill
         style={{ objectFit: "cover", width: "100%", height: "100%" }}
       />
@@ -102,7 +101,6 @@ const EmotionImageChanger = () => {
             key={index}
             src={src}
             alt={`preload-${index}`}
-            priority
             width={854}
             height={480}
           />
