@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
-// Styled Components
 const FullScreenContainer = styled.div`
     position: relative;
     width: 100vw;
@@ -17,17 +16,6 @@ const H1 = styled.h1`
     font-weight: bold;
     color: #ff5733;
     z-index: 10;
-`;
-
-const Button = styled.button`
-    z-index: 10;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #ff5733;
-    border: none;
-    cursor: pointer;
 `;
 
 const HiddenImagesContainer = styled.div`
@@ -50,9 +38,6 @@ const EmotionImageChanger = () => {
   const [imageSrc, setImageSrc] = useState(allImages[0]);
   const [facesDetected, setFacesDetected] = useState(false);
 
-  // Reference to the video element
-  const videoRef = useRef(null);
-
   // Function to select a random image that is different from the current one
   const getRandomImage = (lastImage) => {
     let randomIndex;
@@ -60,28 +45,6 @@ const EmotionImageChanger = () => {
       randomIndex = Math.floor(Math.random() * allImages.length);
     } while (allImages[randomIndex] === lastImage);
     return allImages[randomIndex];
-  };
-
-  // Function to request camera access and display it on the video element
-  const requestCameraAccess = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      console.log("Camera access granted", stream);
-      // Attach the stream to the video element
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play(); // Start playback
-      }
-    } catch (error) {
-      if (error.name === "NotAllowedError") {
-        alert("Permission to access the camera has been denied.");
-      } else if (error.name === "NotFoundError") {
-        alert("No camera devices found.");
-      } else {
-        alert(`Camera error: ${error.message}`);
-      }
-      console.error("Error accessing the camera:", error);
-    }
   };
 
   // Event handling logic
@@ -93,6 +56,7 @@ const EmotionImageChanger = () => {
     };
 
     const handleEmotionEvent = (evt) => {
+      console.log("Emotion Event:", evt);
       const { affects98 } = evt.detail.output;
       const dominant = findDominantEmotion(affects98);
       if (dominant !== dominantEmotion) {
@@ -102,6 +66,7 @@ const EmotionImageChanger = () => {
     };
 
     const handleFacesEvent = (evt) => {
+      console.log("Faces Event:", evt);
       if (evt.detail?.faces?.length) {
         setFacesDetected(true);
       } else {
@@ -109,17 +74,11 @@ const EmotionImageChanger = () => {
       }
     };
 
-    window.addEventListener(
-      "CY_FACE_AROUSAL_VALENCE_RESULT",
-      handleEmotionEvent
-    );
+    window.addEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
     window.addEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
 
     return () => {
-      window.removeEventListener(
-        "CY_FACE_AROUSAL_VALENCE_RESULT",
-        handleEmotionEvent
-      );
+      window.removeEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
       window.removeEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
     };
   }, [dominantEmotion, imageSrc]);
@@ -127,20 +86,11 @@ const EmotionImageChanger = () => {
   return (
     <FullScreenContainer>
       <H1>{facesDetected ? dominantEmotion : ""}</H1>
-      <Button onClick={requestCameraAccess}>Start Camera</Button>
-      <video
-        ref={videoRef}
-        width="640"
-        height="480"
-        autoPlay
-        playsInline
-        style={{ zIndex: 10, backgroundColor: "black" }}
-      />
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
         fill
-        style={{ objectFit: "cover" }}
+        style={{ objectFit: "cover", width: "100%", height: "100%" }}
       />
       <HiddenImagesContainer>
         {allImages.map((src, index) => (
