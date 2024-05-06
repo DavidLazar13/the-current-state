@@ -14,7 +14,7 @@ const FullScreenContainer = styled.div`
 const H1 = styled.h1`
     font-size: 30px;
     font-weight: bold;
-    color: #ff5733;
+    color: #FF5733;
     z-index: 10;
 `;
 
@@ -47,7 +47,6 @@ const EmotionImageChanger = () => {
     return allImages[randomIndex];
   };
 
-  // Event handling logic
   useEffect(() => {
     const findDominantEmotion = (emotions) => {
       return Object.keys(emotions).reduce((a, b) =>
@@ -56,7 +55,6 @@ const EmotionImageChanger = () => {
     };
 
     const handleEmotionEvent = (evt) => {
-      console.log("Emotion Event:", evt);
       const { affects98 } = evt.detail.output;
       const dominant = findDominantEmotion(affects98);
       if (dominant !== dominantEmotion) {
@@ -66,30 +64,36 @@ const EmotionImageChanger = () => {
     };
 
     const handleFacesEvent = (evt) => {
-      console.log("Faces Event:", evt);
       if (evt.detail?.faces?.length) {
         setFacesDetected(true);
-      } else {
+      }
+      if (!evt.detail?.faces?.length) {
         setFacesDetected(false);
       }
-    };
+    }
 
     window.addEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
     window.addEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
 
+
+
     return () => {
-      window.removeEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
+      window.removeEventListener(
+        "CY_FACE_AROUSAL_VALENCE_RESULT",
+        handleEmotionEvent
+      );
       window.removeEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
     };
   }, [dominantEmotion, imageSrc]);
 
   return (
     <FullScreenContainer>
-      <H1>{facesDetected ? dominantEmotion : ""}</H1>
+      <H1>{facesDetected ? dominantEmotion : ''}</H1>
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
         fill
+        priority
         style={{ objectFit: "cover", width: "100%", height: "100%" }}
       />
       <HiddenImagesContainer>
@@ -97,6 +101,7 @@ const EmotionImageChanger = () => {
           <Image
             key={index}
             src={src}
+            priority
             alt={`preload-${index}`}
             width={854}
             height={480}
