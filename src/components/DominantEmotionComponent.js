@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
+// Styled Components
 const FullScreenContainer = styled.div`
     position: relative;
     width: 100vw;
@@ -14,12 +15,23 @@ const FullScreenContainer = styled.div`
 const H1 = styled.h1`
     font-size: 30px;
     font-weight: bold;
-    color: #FF5733;
+    color: #ff5733;
     z-index: 10;
 `;
 
+const Button = styled.button`
+    z-index: 10;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #ff5733;
+    border: none;
+    cursor: pointer;
+`;
+
 const HiddenImagesContainer = styled.div`
-    display: none;
+  display: none;
 `;
 
 const generateImagePaths = () => {
@@ -47,6 +59,25 @@ const EmotionImageChanger = () => {
     return allImages[randomIndex];
   };
 
+  // Function to request camera access
+  const requestCameraAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      console.log('Camera access granted', stream);
+      // Process the stream or attach to a video element if needed
+    } catch (error) {
+      if (error.name === 'NotAllowedError') {
+        alert('Permission to access the camera has been denied.');
+      } else if (error.name === 'NotFoundError') {
+        alert('No camera devices found.');
+      } else {
+        alert(`Camera error: ${error.message}`);
+      }
+      console.error('Error accessing the camera:', error);
+    }
+  };
+
+  // Event handling logic
   useEffect(() => {
     const findDominantEmotion = (emotions) => {
       return Object.keys(emotions).reduce((a, b) =>
@@ -66,16 +97,16 @@ const EmotionImageChanger = () => {
     const handleFacesEvent = (evt) => {
       if (evt.detail?.faces?.length) {
         setFacesDetected(true);
-      }
-      if (!evt.detail?.faces?.length) {
+      } else {
         setFacesDetected(false);
       }
-    }
+    };
 
-    window.addEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
+    window.addEventListener(
+      "CY_FACE_AROUSAL_VALENCE_RESULT",
+      handleEmotionEvent
+    );
     window.addEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
-
-
 
     return () => {
       window.removeEventListener(
@@ -88,12 +119,13 @@ const EmotionImageChanger = () => {
 
   return (
     <FullScreenContainer>
-      <H1>{facesDetected ? dominantEmotion : ''}</H1>
+      <H1>{facesDetected ? dominantEmotion : ""}</H1>
+      <Button onClick={requestCameraAccess}>Start Camera</Button>
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
         fill
-        style={{ objectFit: "cover", width: "100%", height: "100%" }}
+        style={{ objectFit: "cover" }}
       />
       <HiddenImagesContainer>
         {allImages.map((src, index) => (
