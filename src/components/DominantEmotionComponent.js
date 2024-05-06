@@ -85,6 +85,8 @@ const EmotionImageChanger = () => {
       );
     };
 
+    console.log('dominantEmotion:', dominantEmotion);
+
     const handleEmotionEvent = (evt) => {
       const { affects98 } = evt.detail.output;
       const dominant = findDominantEmotion(affects98);
