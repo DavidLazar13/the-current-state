@@ -18,15 +18,6 @@ const H1 = styled.h1`
     z-index: 10;
 `;
 
-const H2 = styled.h2`
-    margin-top: 20px;
-    position: absolute;
-    font-size: 50px;
-    font-weight: bold;
-    color: #FF5733;
-    z-index: 10;
-`;
-
 const HiddenImagesContainer = styled.div`
     display: none;
 `;
