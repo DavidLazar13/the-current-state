@@ -1,17 +1,20 @@
 import { OpenAI } from 'openai';
 
+const MAX_RETRIES = 3;
+
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const openai = new OpenAI({
       apiKey: process.env.OPEN_API_KEY,
     });
 
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
-        messages: [{
-          "role": "user",
-          "content": `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Write it as if you are an AI writing for humanity. Make sure it contains at least 50 characters.
+    const generatePoem = async (attempt = 1) => {
+      try {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4-turbo-preview",
+          messages: [{
+            "role": "user",
+            "content": `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Write it as if you are an AI writing for humanity. Make sure it contains at least 50 characters.
 
 **Formatting Requirements**:
 - HTML: Use the < pre> tag exclusively to ensure the text is arranged as concrete poetry.
@@ -30,18 +33,25 @@ export default async function handler(req, res) {
 - Maintain clear readability.
 - Ensure the poem remains comprehensible despite disruptions.
 `
-        }],
-        max_tokens: 1200
-      });
+          }],
+          max_tokens: 2000
+        });
+        res.status(200).json({ result: response.choices[0].message });
+      } catch (error) {
+        console.error(`OpenAI error on attempt ${attempt}:`, error);
 
-      res.status(200).json({ result: response.choices[0].message });
-    } catch (error) {
-      console.error('OpenAI error:', error);
-      res.status(500).json({ error: 'Error generating prompt' });
-    }
+        if (attempt < MAX_RETRIES) {
+          // Retry after a short delay
+          setTimeout(() => generatePoem(attempt + 1), 1000);
+        } else {
+          res.status(500).json({ error: 'Error generating prompt after multiple attempts' });
+        }
+      }
+    };
+
+    await generatePoem();
   } else {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
-
 
