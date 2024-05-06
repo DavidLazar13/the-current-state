@@ -103,8 +103,8 @@ const EmotionImageChanger = () => {
             src={src}
             alt={`preload-${index}`}
             priority
-            width={1280}
-            height={720}
+            width={854}
+            height={480}
           />
         ))}
       </HiddenImagesContainer>
