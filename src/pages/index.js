@@ -1,41 +1,43 @@
-import { Inter } from "next/font/google";
-import { useEffect, useRef } from "react";
-import { useExternalScript } from "../helpers/externalScriptsLoader";
-import { getAiSdkControls } from "../helpers/loader";
+import React from "react";
+import styled from "styled-components";
+import Link from "next/link";  // Import the Link component
 
-import DominantEmotionComponent from "@/components/DominantEmotionComponent";
-import FullscreenOnFKeyPress from "@/components/FullscreenToggleComponent";
-import MoodComponent from "@/components/MoodComponent";
 
-const inter = Inter({ subsets: ["latin"] });
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+    font-family: 'VT323', sans-serif;
+`;
+
+
+const Button = styled.button`
+    color: #33ff18;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 25px;
+    border: 1px solid #33ff18;
+    margin: 20px;
+    cursor: pointer;
+    opacity: ${({ hidden }) => (hidden ? 0 : 1)};
+    transition: visibility 0.2s, opacity 0.2s;
+`;
 
 export default function Home() {
-  const mphToolsState = useExternalScript("https://sdk.morphcast.com/mphtools/v1.0/mphtools.js");
-  const aiSdkState = useExternalScript("https://ai-sdk.morphcast.com/v1.16/ai-sdk.js");
-  const videoEl = useRef(undefined)
-  useEffect(() => {
-    videoEl.current = document.getElementById("videoEl");
-    async function getAiSdk (){
-      if(aiSdkState === "ready" && mphToolsState === "ready"){
-        const { source, start } = await getAiSdkControls();
-        await source.useCamera({
-          toVideoElement: document.getElementById("videoEl"),
-        });
-        await start();
-      }
-    }
-    getAiSdk();
-  }, [aiSdkState, mphToolsState]);
 
 
   return (
-        <div>
-          <FullscreenOnFKeyPress/>
-          <div style={{width:"600px", height: "400px", position:"relative", display:"none"}}>
-            <video id="videoEl"></video>
-          </div>
-          <DominantEmotionComponent></DominantEmotionComponent>
-          <MoodComponent></MoodComponent>
-        </div>
+        <Wrapper>
+          <Link href="/the-creator" passHref>
+            <Button>The Creator</Button>
+          </Link>
+          <Link href="/the-observer" passHref>
+            <Button>The Observer</Button>
+          </Link>
+          <Link href="/the-witness" passHref>
+            <Button>The Witness</Button>
+          </Link>
+        </Wrapper>
   );
 }
