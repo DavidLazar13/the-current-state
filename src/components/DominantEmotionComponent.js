@@ -12,10 +12,11 @@ const FullScreenContainer = styled.div`
 `;
 
 const H1 = styled.h1`
-    font-size: 30px;
+    font-size: 80px;
     font-weight: bold;
-    color: #FF5733;
     z-index: 10;
+    color: #33ff18;
+    font-family: 'VT323', sans-serif;
 `;
 
 const HiddenImagesContainer = styled.div`
