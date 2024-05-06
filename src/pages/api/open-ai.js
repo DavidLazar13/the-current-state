@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4-turbo",
         messages: [{
           "role": "user",
           "content": `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Write it as if you are an AI writing for humanity. Make sure it contains at least 50 characters.
@@ -43,3 +43,5 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
+
+
