@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
@@ -31,7 +31,7 @@ const Button = styled.button`
 `;
 
 const HiddenImagesContainer = styled.div`
-  display: none;
+    display: none;
 `;
 
 const generateImagePaths = () => {
@@ -50,6 +50,9 @@ const EmotionImageChanger = () => {
   const [imageSrc, setImageSrc] = useState(allImages[0]);
   const [facesDetected, setFacesDetected] = useState(false);
 
+  // Reference to the video element
+  const videoRef = useRef(null);
+
   // Function to select a random image that is different from the current one
   const getRandomImage = (lastImage) => {
     let randomIndex;
@@ -59,21 +62,25 @@ const EmotionImageChanger = () => {
     return allImages[randomIndex];
   };
 
-  // Function to request camera access
+  // Function to request camera access and display it on the video element
   const requestCameraAccess = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      console.log('Camera access granted', stream);
-      // Process the stream or attach to a video element if needed
+      console.log("Camera access granted", stream);
+      // Attach the stream to the video element
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play(); // Start playback
+      }
     } catch (error) {
-      if (error.name === 'NotAllowedError') {
-        alert('Permission to access the camera has been denied.');
-      } else if (error.name === 'NotFoundError') {
-        alert('No camera devices found.');
+      if (error.name === "NotAllowedError") {
+        alert("Permission to access the camera has been denied.");
+      } else if (error.name === "NotFoundError") {
+        alert("No camera devices found.");
       } else {
         alert(`Camera error: ${error.message}`);
       }
-      console.error('Error accessing the camera:', error);
+      console.error("Error accessing the camera:", error);
     }
   };
 
@@ -84,8 +91,6 @@ const EmotionImageChanger = () => {
         emotions[a] > emotions[b] ? a : b
       );
     };
-
-    console.log('dominantEmotion:', dominantEmotion);
 
     const handleEmotionEvent = (evt) => {
       const { affects98 } = evt.detail.output;
@@ -123,6 +128,14 @@ const EmotionImageChanger = () => {
     <FullScreenContainer>
       <H1>{facesDetected ? dominantEmotion : ""}</H1>
       <Button onClick={requestCameraAccess}>Start Camera</Button>
+      <video
+        ref={videoRef}
+        width="640"
+        height="480"
+        autoPlay
+        playsInline
+        style={{ zIndex: 10, backgroundColor: "black" }}
+      />
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
