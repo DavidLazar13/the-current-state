@@ -9,7 +9,7 @@ const MarqueeContainer = styled.div`
     font-weight: bold;
 `;
 
-function Articles({ initialSearch = 'global warming OR war OR economic crisis', initialTag = '' }) {
+function Articles({ initialSearch = 'global warming OR war OR economic crisis OR artificial intelligence', initialTag = '' }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

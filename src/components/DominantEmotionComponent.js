@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
@@ -11,56 +11,114 @@ const FullScreenContainer = styled.div`
     justify-content: center;
 `;
 
+const H1 = styled.h1`
+    font-size: 100px;
+    font-weight: bold;
+    color: #FF5733;
+    z-index: 10;
+`;
+
+const H2 = styled.h2`
+    margin-top: 20px;
+    position: absolute;
+    font-size: 50px;
+    font-weight: bold;
+    color: #FF5733;
+    z-index: 10;
+`;
+
 const HiddenImagesContainer = styled.div`
     display: none;
 `;
 
-const GenderComponent = () => {
-  const [dominantEmotion, setDominantEmotion] = useState("");
+const generateImagePaths = () => {
+  const paths = [];
+  for (let i = 1; i <= 84; i++) {
+    const numString = String(i).padStart(2, "0");
+    paths.push(`/images/IMAGE_${numString}.jpg`);
+  }
+  return paths;
+};
 
-  const emotionImages = {
-    angry: { src: "/emotions/ANGRY/ANGRY_01.JPG", width: 1920, height: 1080 },
-    disgust: { src: "/emotions/DISGUST/DISGUST_01.JPG", width: 1920, height: 1080 },
-    fear: { src: "/emotions/FEAR/FEAR_01.JPG", width: 1920, height: 1080 },
-    happy: { src: "/emotions/HAPPY/HAPPY_02.JPG", width: 1920, height: 1080 },
-    neutral: { src: "/emotions/NEUTRAL/NEUTRAL_01.JPG", width: 1920, height: 1080 },
-    sad: { src: "/emotions/SAD/SAD_02.JPG", width: 1920, height: 1080 },
-    surprise: { src: "/emotions/SURPRISE/SURPRISE_01.JPG", width: 1920, height: 1080 },
+const allImages = generateImagePaths();
+
+const EmotionImageChanger = () => {
+  const [dominantEmotion, setDominantEmotion] = useState("");
+  const [imageSrc, setImageSrc] = useState(allImages[0]);
+  const [facesDetected, setFacesDetected] = useState(false);
+
+  // Function to select a random image that is different from the current one
+  const getRandomImage = (lastImage) => {
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * allImages.length);
+    } while (allImages[randomIndex] === lastImage);
+    return allImages[randomIndex];
   };
 
   useEffect(() => {
-    function handleEmotionEvent(evt) {
-      const emotion = evt.detail.output.dominantEmotion || "neutral";
-      console.log("Dominant emotion detected:", emotion);
-      setDominantEmotion(emotion.toLowerCase());
+    const findDominantEmotion = (emotions) => {
+      return Object.keys(emotions).reduce((a, b) =>
+        emotions[a] > emotions[b] ? a : b
+      );
+    };
+
+    const handleEmotionEvent = (evt) => {
+      const { affects98 } = evt.detail.output;
+      const dominant = findDominantEmotion(affects98);
+      if (dominant !== dominantEmotion) {
+        setDominantEmotion(dominant);
+        setImageSrc(getRandomImage(imageSrc));
+      }
+    };
+
+    const handleFacesEvent = (evt) => {
+      if (evt.detail?.faces?.length) {
+        setFacesDetected(true);
+      }
+      if (!evt.detail?.faces?.length) {
+        setFacesDetected(false);
+      }
     }
 
-    window.addEventListener("CY_FACE_EMOTION_RESULT", handleEmotionEvent);
+    window.addEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
+    window.addEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
+
+
 
     return () => {
-      window.removeEventListener("CY_FACE_EMOTION_RESULT", handleEmotionEvent);
+      window.removeEventListener(
+        "CY_FACE_AROUSAL_VALENCE_RESULT",
+        handleEmotionEvent
+      );
+      window.removeEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
     };
-  }, []);
+  }, [dominantEmotion, imageSrc]);
 
   return (
     <FullScreenContainer>
-      {dominantEmotion && (
-        <Image
-          src={emotionImages[dominantEmotion].src}
-          alt={dominantEmotion}
-          priority
-          fill={true}
-          style={{ objectFit: 'cover', width: '100%', height: '100%' }} // Changed from 'fill' to 'cover'
-        />
-      )}
-       Preload Images
+      <H1>{facesDetected ? dominantEmotion : ''}</H1>
+      <Image
+        src={imageSrc}
+        alt={dominantEmotion || "random"}
+        priority
+        fill
+        style={{ objectFit: "cover", width: "100%", height: "100%" }}
+      />
       <HiddenImagesContainer>
-        {Object.values(emotionImages).map((img, index) => (
-          <Image key={index} src={img.src} alt={`preload-${index}`} priority width={img.width} height={img.height} />
+        {allImages.map((src, index) => (
+          <Image
+            key={index}
+            src={src}
+            alt={`preload-${index}`}
+            priority
+            width={1920}
+            height={1080}
+          />
         ))}
       </HiddenImagesContainer>
     </FullScreenContainer>
   );
 };
 
-export default GenderComponent;
+export default EmotionImageChanger;

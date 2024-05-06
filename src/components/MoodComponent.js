@@ -79,6 +79,7 @@ const MoodComponent = () => {
     function fn(evt) {
       showPin();
       setEmotion(evt.detail.output);
+      console.log("mood",evt.detail)
       resetTimeout();
     };
 
