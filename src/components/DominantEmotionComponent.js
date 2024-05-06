@@ -12,7 +12,7 @@ const FullScreenContainer = styled.div`
 `;
 
 const H1 = styled.h1`
-    font-size: 100px;
+    font-size: 30px;
     font-weight: bold;
     color: #FF5733;
     z-index: 10;
@@ -103,8 +103,8 @@ const EmotionImageChanger = () => {
             src={src}
             alt={`preload-${index}`}
             priority
-            width={1920}
-            height={1080}
+            width={1280}
+            height={720}
           />
         ))}
       </HiddenImagesContainer>
