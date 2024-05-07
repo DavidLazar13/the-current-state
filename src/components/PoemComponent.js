@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import { Typewriter } from 'react-simple-typewriter';
 
+// Styled component for the main content wrapper
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -11,12 +12,14 @@ const Wrapper = styled.div`
     width: 100%;
 `;
 
-const TextFormated = styled.p`
+// Styled component for displaying error messages
+const TextFormatted = styled.p`
     font-size: 32px;
     color: #33ff18;
     font-family: 'VT323', sans-serif;
-`
+`;
 
+// Styled component for the poem container
 const Poem = styled.div`
     font-size: 28px;
     color: #33ff18;
@@ -32,6 +35,7 @@ const Poem = styled.div`
     border: 1px solid transparent;
 `;
 
+// Styled component for measuring the size of the poem
 const HiddenMeasure = styled.div`
     visibility: hidden;
     position: absolute;
@@ -40,36 +44,31 @@ const HiddenMeasure = styled.div`
     font-family: 'VT323', sans-serif;
 `;
 
-function PoemComponent({ generatedPoem, loading, error }) {
+// Component for displaying poems with a typewriter effect
+function PoemComponent({ generatedPoem, error }) {
   const [plainTextPoem, setPlainTextPoem] = useState('');
-  const [parsedHTML, setParsedHTML] = useState('');
-  const [poemWidth, setPoemWidth] = useState('800px'); // Default width
-  const [poemHeight, setPoemHeight] = useState('auto'); // Default height
-  const [isContentVisible, setIsContentVisible] = useState(false); // Visibility control
-
+  const [poemWidth, setPoemWidth] = useState('800px');
+  const [poemHeight, setPoemHeight] = useState('auto');
+  const [isContentVisible, setIsContentVisible] = useState(false);
   const measureRef = useRef(null);
 
-  // Parse the poem text and update the hidden measurement div
+  // Extract plain text from HTML and measure the content size
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Parse HTML to extract text content
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = generatedPoem;
       const textContent = tempDiv.textContent || tempDiv.innerText || '';
 
-      // Hide content, then set the new poem content and make it visible after a delay
       setIsContentVisible(false);
-      setPlainTextPoem('');
-      setParsedHTML(tempDiv.innerHTML);
 
       setTimeout(() => {
         setPlainTextPoem(textContent);
         setIsContentVisible(true);
-      }, 500); // Adjust this delay as needed
+      }, 500); // Delay to simulate loading or processing time
     }
   }, [generatedPoem]);
 
-  // Measure both width and height using the hidden measurement div
+  // Calculate and update the size of the poem based on the measured content
   useEffect(() => {
     if (measureRef.current) {
       const { width, height } = measureRef.current.getBoundingClientRect();
@@ -78,14 +77,15 @@ function PoemComponent({ generatedPoem, loading, error }) {
     }
   }, [plainTextPoem]);
 
-  if (error) return <Wrapper><TextFormated>Error: {error}</TextFormated> </Wrapper>;
+  // Render error message if an error is present
+  if (error) return <Wrapper><TextFormatted>Error: {error}</TextFormatted></Wrapper>;
 
   return (
     <Wrapper>
       <HiddenMeasure ref={measureRef}>{plainTextPoem}</HiddenMeasure>
       <Poem width={poemWidth} height={poemHeight}>
         {isContentVisible ? (
-          <div>
+          <div> {/* This div wraps the Typewriter component */}
             <Typewriter
               words={[plainTextPoem]}
               loop={1}
@@ -103,4 +103,3 @@ function PoemComponent({ generatedPoem, loading, error }) {
 }
 
 export default PoemComponent;
-

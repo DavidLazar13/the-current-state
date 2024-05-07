@@ -3,51 +3,54 @@ import MarqueeComponent from "@/components/MarqueeComponent";
 import FullscreenOnFKeyPress from "@/components/FullscreenToggleComponent";
 import styled from "styled-components";
 
+// Styled container for the marquee display
 const MarqueeContainer = styled.div`
     text-transform: uppercase;
     font-weight: bold;
 `;
 
+// Styled button for audio control with conditional styling based on visibility
 const AudioControl = styled.button`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  opacity: ${({ hidden }) => (hidden ? 0 : 1)};
-  visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
-  transition: visibility 0.2s, opacity 0.2s;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    opacity: ${({ hidden }) => (hidden ? 0 : 1)};
+    visibility: ${({ hidden }) => (hidden ? "hidden" : "visible")};
+    transition: visibility 0.2s, opacity 0.2s;
 `;
 
 function Articles({ initialSearch = "global warming OR war OR economic crisis OR artificial intelligence", initialTag = "" }) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const audioRef = useRef(null); // Reference for controlling the audio element
+  const audioRef = useRef(null);  // Reference for controlling the audio element
   const [isPlaying, setIsPlaying] = useState(false);
   const [isControlHidden, setIsControlHidden] = useState(false);
 
+  // Fetch articles based on search criteria
   useEffect(() => {
     setLoading(true);
     fetch(`/api/articles?search=${initialSearch}`)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         setArticles(data.results);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         setError("Failed to fetch articles");
         setLoading(false);
         console.error(err);
       });
   }, [initialSearch, initialTag]);
 
-  // Function to chunk an array into smaller subarrays of a specified size
+  // Function to split articles into chunks of three for marquee display
   const chunkArray = (array, chunkSize) => {
     const result = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -56,19 +59,15 @@ function Articles({ initialSearch = "global warming OR war OR economic crisis OR
     return result;
   };
 
-  // Chunk articles into groups of 3
   const articleChunks = chunkArray(articles, 3);
 
+  // Toggle audio playback
   const toggleAudioPlayback = () => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsControlHidden(false); // Show control if paused
-      } else {
-        audioRef.current.play();
-        setIsControlHidden(true); // Hide control when playing
-      }
-      setIsPlaying(!isPlaying);
+      const shouldPlay = !isPlaying;
+      shouldPlay ? audioRef.current.play() : audioRef.current.pause();
+      setIsPlaying(shouldPlay);
+      setIsControlHidden(shouldPlay);  // Toggle visibility of the control
     }
   };
 
@@ -79,31 +78,20 @@ function Articles({ initialSearch = "global warming OR war OR economic crisis OR
     <div>
       <FullscreenOnFKeyPress />
 
-      {articleChunks.map((chunk, index) => {
-        // Create a concatenated string for the articles' headlines
-        const concatenatedText = chunk.map((article) => article.webTitle).join(" | ");
+      {/* Display chunks of articles in MarqueeComponent with alternating colors */}
+      {articleChunks.map((chunk, index) => (
+        <MarqueeContainer key={index}>
+          <MarqueeComponent
+            text={chunk.map(article => article.webTitle).join(" | ")}
+            speed={Math.floor(Math.random() * (50 - 40 + 1)) + 40}
+            backgroundColor={index % 2 === 0 ? "black" : "white"}
+            textColor={index % 2 === 0 ? "white" : "black"}
+          />
+        </MarqueeContainer>
+      ))}
 
-        // Alternate between two background colors for each MarqueeComponent
-        const backgroundColor = index % 2 === 0 ? "black" : "white";
-        const textColor = backgroundColor === "black" ? "white" : "black";
-
-        return (
-          <MarqueeContainer key={index}>
-            <MarqueeComponent
-              text={concatenatedText}
-              speed={Math.floor(Math.random() * (50 - 40 + 1)) + 40}
-              backgroundColor={backgroundColor}
-              textColor={textColor}
-              textStyle={{ textTransform: "uppercase" }}
-            />
-          </MarqueeContainer>
-        );
-      })}
-
-      {/* Audio Element for Background Music */}
       <audio ref={audioRef} src="/sound/the-status-of-now.mp3" loop />
 
-      {/* Audio Control Button */}
       <AudioControl onClick={toggleAudioPlayback} hidden={isControlHidden}>
         {isPlaying ? "Pause Music" : "Play Music"}
       </AudioControl>

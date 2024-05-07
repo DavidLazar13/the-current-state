@@ -1,5 +1,7 @@
 import {Mutex} from 'async-mutex';
 
+// Source: https://github.com/MorphCast/mph-sdk-integration-react/tree/master/src/helpers/ai-sdk
+
 /**
  * Source able to dynamically change the type of input (video, camera) while the MorphCast SDK is running.
  * You can use it as an input source of the SDK.

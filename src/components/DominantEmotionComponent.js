@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 
+// Styled component for the fullscreen container
 const FullScreenContainer = styled.div`
     position: relative;
     width: 100vw;
@@ -11,7 +12,8 @@ const FullScreenContainer = styled.div`
     justify-content: center;
 `;
 
-const H1 = styled.h1`
+// Styled component for the header displaying emotion
+const StyledHeader = styled.h1`
     font-size: 80px;
     font-weight: bold;
     z-index: 10;
@@ -19,27 +21,25 @@ const H1 = styled.h1`
     font-family: 'VT323', sans-serif;
 `;
 
+// Hidden container to preload images
 const HiddenImagesContainer = styled.div`
     display: none;
 `;
 
-const generateImagePaths = () => {
-  const paths = [];
-  for (let i = 1; i <= 84; i++) {
-    const numString = String(i).padStart(2, "0");
-    paths.push(`/images/IMAGE_${numString}.jpg`);
-  }
-  return paths;
-};
+// Function to generate image paths
+const generateImagePaths = () => Array.from({ length: 84 }, (_, i) =>
+  `/images/IMAGE_${String(i + 1).padStart(2, "0")}.jpg`
+);
 
 const allImages = generateImagePaths();
 
-const EmotionImageChanger = () => {
+// Main component for changing images based on detected emotions
+const DominantEmotionComponent = () => {
   const [dominantEmotion, setDominantEmotion] = useState("");
   const [imageSrc, setImageSrc] = useState(allImages[0]);
   const [facesDetected, setFacesDetected] = useState(false);
 
-  // Function to select a random image that is different from the current one
+  // Function to get a random image that differs from the current one
   const getRandomImage = (lastImage) => {
     let randomIndex;
     do {
@@ -48,48 +48,37 @@ const EmotionImageChanger = () => {
     return allImages[randomIndex];
   };
 
-  useEffect(() => {
-    const findDominantEmotion = (emotions) => {
-      return Object.keys(emotions).reduce((a, b) =>
-        emotions[a] > emotions[b] ? a : b
-      );
-    };
+  // Function to find the dominant emotion from the event data
+  const findDominantEmotion = (emotions) =>
+    Object.keys(emotions).reduce((a, b) => emotions[a] > emotions[b] ? a : b);
 
-    const handleEmotionEvent = (evt) => {
-      const { affects98 } = evt.detail.output;
-      const dominant = findDominantEmotion(affects98);
+  useEffect(() => {
+    const handleEmotionEvent = ({ detail: { output } }) => {
+      const dominant = findDominantEmotion(output.affects98);
       if (dominant !== dominantEmotion) {
         setDominantEmotion(dominant);
         setImageSrc(getRandomImage(imageSrc));
       }
     };
 
-    const handleFacesEvent = (evt) => {
-      if (evt.detail?.faces?.length) {
-        setFacesDetected(true);
-      }
-      if (!evt.detail?.faces?.length) {
-        setFacesDetected(false);
-      }
-    }
+    const handleFacesEvent = ({ detail }) => {
+      setFacesDetected(detail?.faces?.length > 0);
+    };
 
+    // Register event listeners
     window.addEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
     window.addEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
 
-
-
+    // Clean-up function to remove event listeners
     return () => {
-      window.removeEventListener(
-        "CY_FACE_AROUSAL_VALENCE_RESULT",
-        handleEmotionEvent
-      );
+      window.removeEventListener("CY_FACE_AROUSAL_VALENCE_RESULT", handleEmotionEvent);
       window.removeEventListener("CY_FACE_DETECTOR_RESULT", handleFacesEvent);
     };
   }, [dominantEmotion, imageSrc]);
 
   return (
     <FullScreenContainer>
-      <H1>{facesDetected ? dominantEmotion : ''}</H1>
+      <StyledHeader>{facesDetected ? dominantEmotion : ''}</StyledHeader>
       <Image
         src={imageSrc}
         alt={dominantEmotion || "random"}
@@ -99,18 +88,11 @@ const EmotionImageChanger = () => {
       />
       <HiddenImagesContainer>
         {allImages.map((src, index) => (
-          <Image
-            key={index}
-            src={src}
-            priority
-            alt={`preload-${index}`}
-            width={854}
-            height={480}
-          />
+          <Image key={index} src={src} priority alt={`preload-${index}`} width={854} height={480} />
         ))}
       </HiddenImagesContainer>
     </FullScreenContainer>
   );
 };
 
-export default EmotionImageChanger;
+export default DominantEmotionComponent;
