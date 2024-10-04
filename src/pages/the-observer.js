@@ -90,7 +90,7 @@ function Articles({ initialSearch = "global warming OR war OR economic crisis OR
         </MarqueeContainer>
       ))}
 
-      <audio ref={audioRef} src="/sound/the-status-of-now.mp3" loop />
+      <audio ref={audioRef} src="/sound/status_of_now_sound.mp3" loop />
 
       <AudioControl onClick={toggleAudioPlayback} hidden={isControlHidden}>
         {isPlaying ? "Pause Music" : "Play Music"}
