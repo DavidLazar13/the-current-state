@@ -26,13 +26,13 @@ export default async function handler(req, res) {
           model: "gpt-4-turbo-preview",
           messages: [{
             role: "user",
-            content: `Compose a concrete poem reflecting the current dystopian state of the world, infusing it with a tone of hope and optimism. Write it as if you are an AI writing for humanity. Make sure it contains at least 50 characters.
+            content: `Write a concrete poetic reflection on the world where the hyperreal fully takes over. In this reality, media and technology no longer just filter our experiences but actively generate new worlds—new realities—that replace the original entirely. Reflect on how these simulations shape our perceptions, creating a world where the boundary between the real and the artificial no longer exists. Explore themes of identity, existence, and the loss of the original, weaving in imagery that captures the surreal and immersive nature of living in this constructed world. The text should be at least 50 characters long.
 
             **Formatting Requirements**:
             - HTML: Use the < pre> tag exclusively to ensure the text is arranged as concrete poetry.
             - Corrupted Text: Add corrupted characters to represent digital decay or disruption while keeping the poem readable. Ensure these characters are used in addition to normal words and do not replace them entirely.
             - Unicode Artifacts: Add digital or Unicode artifacts to enhance the visual presentation, but prioritize text content.
-            - Zalgo Text: Ensure that Zalgo text is prominently featured to enhance the visual presentation of digital decay, making the corrupted appearance noticeable and significant. It should complement the normal words and not replace them.
+            - Zalgo Text: Ensure that Zalgo text is prominently featured to enhance the visual presentation of text, making the corrupted appearance noticeable and significant. It should complement the normal words and not replace them.
 
             **Restrictions**:
             - The poem must contain a high percentage of actual words with meaningful text.
